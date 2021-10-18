@@ -6,6 +6,8 @@
     "array": "cpp",
     "tuple": "cpp",
     "utility": "cpp",
-    "iomanip": "cpp"
+    "iomanip": "cpp",
+    "string": "cpp",
+    "istream": "cpp"
   }
 }

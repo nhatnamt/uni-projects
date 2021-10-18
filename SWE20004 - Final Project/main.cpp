@@ -11,6 +11,7 @@ using namespace std;
 #define CANDIDATE_FILENAME      "candidateTable.csv"
 #define CANDIDATE_NEW_FILENAME  "candidateNewTable.csv"
 
+//options for displaying candidate information
 enum {
     ALL,
     LOW,
@@ -39,22 +40,44 @@ bool file_isValid(ifstream &file) {
     return 1;
 }
 
+// convert from string to number
+int str2int(string str) {
+    if (str == "") return 0;
+    for (char c : str) {
+        if (!isdigit(c)) {return 0;}
+    }
+
+    return stoi(str);
+}
 string update_candidate(string candidateID) {
     string record[12];
-    bool record_found = false;
+    bool recordFound = false;
     ifstream fin (CANDIDATE_FILENAME);
     ofstream fout (CANDIDATE_NEW_FILENAME);
 
+    //check if file can be open/empty
+    if (!file_isValid(fin)) {
+        return "";
+    }
+
+    // get the first field on the row of the database until eof
     while (getline(fin, record[0], ',')) {
         
+        // get the rest of that row
         for (int i = 1; i < 11; i++) {
             getline(fin, record[i], ',');
         }
         getline(fin, record[11], '\n');
+
+        // if match the voted candidate ID
         if (record[0] == candidateID) {
-            int voteCount = stoi(record[11]);
+            // convert vote count to interger and flag found
+            int voteCount = str2int(record[11]);
+            recordFound = true;
+
+            // increase vote by 1 and print confirmation
             record[11] = to_string(voteCount+1);
-            cout << "\nCandidate " << record[0] << " - " << record[3] + ' ' + record[4] << " has " << record[11] << " votes.\n";
+            cout << "\nVote updated. Candidate " << record[0] << " - " << record[3] + ' ' + record[4] << " now has " << record[11] << " votes.\n";
         }
 
         // write to new Candidate table
@@ -63,7 +86,8 @@ string update_candidate(string candidateID) {
         }
         fout << record[11] << '\n';
     }
-    
+
+    //close file
     fin.close();
     fout.close();
 
@@ -72,6 +96,14 @@ string update_candidate(string candidateID) {
 
 	// renaming to the new database
 	rename(CANDIDATE_NEW_FILENAME, CANDIDATE_FILENAME);
+
+    // prompt no match ID
+    if (!recordFound) {
+        pause("No matching candidate ID found. Press enter to return to menu and (P) to see the list of candidates.");
+        return "";
+    } 
+
+    //return the symbol of the candidate
     return record[10];
 }
 
@@ -86,7 +118,10 @@ void display_candidate_information(int option) {
     string record[12];
     int voteMinMax = 0;
 
+    // set min max base on option chose
     if (option == LOW) voteMinMax == 10000;
+    
+    // search for candidates with highest/lowest votes
     if (option != ALL) {
         file.ignore(10000,'\n');
         while (getline(file, record[0], ',')) {
@@ -96,7 +131,7 @@ void display_candidate_information(int option) {
             }
             getline(file, record[11], '\n');
 
-            int votes = stoi(record[11]);
+            int votes = str2int(record[11]);
             if (option == LOW) {
                 if (votes <= voteMinMax) voteMinMax = votes;
             }
@@ -105,13 +140,19 @@ void display_candidate_information(int option) {
             }
         }
     }
+    
+    // add an output line if is printing all candidates
     else {
         cout << "\nRunning Candidates\n";
     }
-    
+
+    // display all or just candidates with highest/lowest votes
+    //clear and move cursor to the top
     file.clear();
     file.seekg(ios::beg);
-    file.ignore(10000, '\n');
+    file.ignore(10000, '\n'); // skip the first line
+
+
     cout << '\t' << left << setw(15) << "Candidate ID" << setw(15) << "Course" << setw(15) << "First name" << setw(15) << "Last name" << setw(15) << "Symbol" << setw(15) << "Vote count" << endl;
     while (getline(file, record[0], ',')) {
         // until eof is reached, read column values temporarily into an array and print relevant info to screen in a table-like format
@@ -120,14 +161,9 @@ void display_candidate_information(int option) {
         }
         getline(file, record[11], '\n');
         
-        if (option == ALL || stoi(record[11]) == voteMinMax) {
+        if (option == ALL || str2int(record[11]) == voteMinMax) {
             cout << '\t' << left << setw(15) << record[0] << setw(15) << record[2] << setw(15) << record[3] << setw(15) << record[4] << setw(15) << record[10] << setw(15) << record[11] << endl;
         }
-        // else {
-        //     if (stoi(record[11]) == voteMinMax) {
-        //         cout << '\t' << left << setw(15) << record[0] << setw(15) << record[2] << setw(15) << record[3] << setw(15) << record[4] << setw(15) << record[10] << setw(15) << record[11] << endl;
-        //     }
-        // }
 
     }
 
@@ -208,7 +244,7 @@ void menu() {
     string selection;
 
     while (exit == false) {
-        cout << "\n\n\nSelect an option to get started\n";
+        cout << "\n\nSelect an option to get started\n";
         cout << "\t(P) Print all candidate information\n";
         cout << "\t(A) Add votes to a candidate\n";
         cout << "\t(S) Display candidate with smaller number of votes\n";
