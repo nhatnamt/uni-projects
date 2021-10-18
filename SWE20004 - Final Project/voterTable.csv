@@ -1,5 +1,5 @@
-Student ID,Course,First name,Last name,Age,Suburb,Postcode,State,Phone,Voted,Voted Symbol
-1,BENG,Nam,Tran,19,Melbourne,3000,VIC,0423001335,No,N/A
+nt ID,Course,First name,Last name,Age,Suburb,Postcode,State,Phone,Voted,Voted Symbol
+102597504,BENG,Nam,Tran,19,Melbourne,3000,VIC,0423001335,Yes,Libz
 103097487,BACS,David,Lockwood,20,Cranbourne,3977,VIC,0459123456,No,N/A
 102887071,BENG,Samosn,Rameshwar,20,Hawthorn,3122,VIC,0491570006,No,N/A
 102930729,BAICT,Albert,Ronda,18,Richmond,3121,VIC,0491570156,No,N/A

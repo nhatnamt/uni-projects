@@ -27,7 +27,7 @@ void pause(string prompt) {
 bool file_isValid(ifstream &file) {
     // check if file can be open
     if (file.fail()) {
-        pause("Voter table failed to open, please find the nearest staff for support.\nPress enter to return to main menu ");
+        pause("Voter table failed to open, please ask for assistance.\nPress enter to return to main menu ");
         return 0;
     }
     // check if csv file (database) is empty
@@ -54,7 +54,7 @@ string update_candidate(string candidateID) {
         if (record[0] == candidateID) {
             int voteCount = stoi(record[11]);
             record[11] = to_string(voteCount+1);
-            cout << "\nCandidate " << record[0] << "(" << record[3] << ")" << " has " << record[11] << " votes.\n";
+            cout << "\nCandidate " << record[0] << " - " << record[3] + ' ' + record[4] << " has " << record[11] << " votes.\n";
         }
 
         // write to new Candidate table
@@ -166,20 +166,24 @@ void add_votes() {
             cout << "\nName: " << record[2] + " " + record[3] << endl 
                  << "Student ID: " << record[0] << endl
                  << "Surburb: " << record[5] << endl;
-
-             while (!vote_confirmed) {
-                string selection, candidateID;
-                cout << "Please enter the candidate's ID you would like to vote for: ";
-                cin >> candidateID;
-                cout << "Are you sure you want to vote for this candidate? (Y for yes/ N for no/ any other key to return to menu) ";
-                cin >> selection;
-                if (selection == "Y" || selection == "y") {
-                    vote_confirmed = true;
-                    record[9] = "Yes";
-                    record[10] = update_candidate(candidateID);
-                } 
-                else if (selection == "X" || selection == "x") {
-                    break;
+            if (record[9] == "Yes") {
+                pause("Already voted. Please ask for assistance. ");
+            } 
+            else {
+                while (!vote_confirmed) {
+                    string selection, candidateID;
+                    cout << "Please enter the candidate's ID you would like to vote for: ";
+                    cin >> candidateID;
+                    cout << "Are you sure you want to vote for this candidate? (Y)es/(N)o/(M)enu ";
+                    cin >> selection;
+                    if (selection == "Y" || selection == "y") {
+                        vote_confirmed = true;
+                        record[9] = "Yes";
+                        record[10] = update_candidate(candidateID);
+                    } 
+                    else if (selection == "X" || selection == "x") {
+                        break;
+                    }
                 }
             }
         }
@@ -204,8 +208,8 @@ void menu() {
     string selection;
 
     while (exit == false) {
-        cout << "Select an option to get started\n";
-        cout << "\t(P) Print candidate information\n";
+        cout << "\n\n\nSelect an option to get started\n";
+        cout << "\t(P) Print all candidate information\n";
         cout << "\t(A) Add votes to a candidate\n";
         cout << "\t(S) Display candidate with smaller number of votes\n";
         cout << "\t(L) Display candidate with largest number of votes\n";
