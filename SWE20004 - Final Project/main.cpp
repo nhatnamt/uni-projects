@@ -6,12 +6,29 @@
 
 using namespace std;
 
+#define VOTER_FILENAME          "voterTable.csv"
+#define CANDIDATE_FILENAME      "candidateTable.csv"
+
 void pause(string prompt) {
     // displays a prompt and waits for the user to press enter before proceeding
-    string temp;
     cout << endl << prompt;
     cin.ignore();
-    temp = cin.get();
+    cin.get();
+}
+
+bool file_isValid(fstream &file) {
+    // check if file can be open
+    if (file.fail()) {
+        pause("Voter table failed to open, please find the nearest staff for support.\nPress enter to exit ");
+        return 0;
+    }
+    // check if csv file (database) is empty
+    if (file.get(), file.eof()) {
+        pause("The database is empty, press enter to return to main menu ");
+        return 0;
+    }
+    // default return to 1, or file is okay
+    return 1;
 }
 
 void print_candidate_information() {
@@ -48,8 +65,59 @@ void print_candidate_information() {
     pause("Press enter to return to main menu\n");
 }
 
-void add_votes() {
-    pause("add_votes() placeholder, press enter to return to main menu\n");
+void add_votes(fstream &file) {
+    //pause("add_votes() placeholder, press enter to return to main menu\n");
+    bool record_found = false;
+    string voterID;
+    string record[12];
+
+    // clear file error
+    //file.clear();
+    //file.seekg(ios::beg);
+    // check if file can be open/empty
+    if (!file_isValid(file)) {
+        return void();
+    }
+    
+    cout << "Please enter your student ID: ";
+    cin >> voterID;
+
+    while (getline(file, record[0], ',') && record_found == false  ) {
+        if (record[0] == voterID) {
+            record_found = true;
+            bool vote_confirmed = false;
+            for (int i = 1; i <= 10; i++) {
+                    getline(file, record[i], ',');
+            }
+            cout << '\t' << "Name: " << record[2] + " " + record[3] << endl 
+                 << '\t' << "Student ID: " << record[0] << endl
+                 << '\t' << "Surburb: " << record[5] << endl;
+            while (!vote_confirmed) {
+                string selection;
+                cout << "Please enter the candidate's ID you would like to vote for: ";
+                cin >> selection;
+                if (selection == "Y" || selection == "y") {
+                    vote_confirmed = true;
+                    cout << "Placeholder";
+                } 
+                else if (selection == "X" || selection == "x") {
+                    break;
+                }
+            }
+        }   
+        else {
+            file.ignore(500,'\n');
+        }
+    }
+
+//                 // until eof is reached, read column values temporarily into an array and print relevant info to screen in a table-like format
+//                 for (int i = 0; i <= 10; i++) {
+//                     getline(file, record[i], ',');
+//                 }
+//                 getline(file, record[11], '\n');
+
+//                 cout << '\t' << left << setw(15) << record[0] << setw(15) << record[2] << setw(15) << record[3] << setw(15) << record[4] << setw(15) << record[10] << setw(15) << record[11] << endl;
+//             }
 }
 
 void display_losing_candidate() {
@@ -64,6 +132,9 @@ void menu() {
     bool exit = false;
     string selection;
 
+    //ifstream candidateFile (CANDIDATE_FILE); //open as output fui
+    fstream voterFile (VOTER_FILENAME, ios::in | ios::out);
+
     while (exit == false) {
         cout << "Select an option to get started\n";
         cout << "\t(P) Print candidate information\n";
@@ -77,7 +148,7 @@ void menu() {
             print_candidate_information();
         }
         else if (selection == "a" || selection == "A") {
-            add_votes();
+            add_votes(voterFile);
         }
         else if (selection == "s" || selection == "S") {
             display_losing_candidate();
@@ -96,6 +167,6 @@ void menu() {
 }
 
 int main()
-{
+{   
     menu(); // main menu for the program
 }
