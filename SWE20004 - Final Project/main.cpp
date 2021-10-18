@@ -11,6 +11,12 @@ using namespace std;
 #define CANDIDATE_FILENAME      "candidateTable.csv"
 #define CANDIDATE_NEW_FILENAME  "candidateNewTable.csv"
 
+enum {
+    ALL,
+    LOW,
+    HIGH
+};
+
 void pause(string prompt) {
     // displays a prompt and waits for the user to press enter before proceeding
     cout << endl << prompt;
@@ -18,10 +24,10 @@ void pause(string prompt) {
     cin.get();
 }
 
-bool file_isValid(fstream &file) {
+bool file_isValid(ifstream &file) {
     // check if file can be open
     if (file.fail()) {
-        pause("Voter table failed to open, please find the nearest staff for support.\nPress enter to exit ");
+        pause("Voter table failed to open, please find the nearest staff for support.\nPress enter to return to main menu ");
         return 0;
     }
     // check if csv file (database) is empty
@@ -48,6 +54,7 @@ string update_candidate(string candidateID) {
         if (record[0] == candidateID) {
             int voteCount = stoi(record[11]);
             record[11] = to_string(voteCount+1);
+            cout << "\nCandidate " << record[0] << "(" << record[3] << ")" << " has " << record[11] << " votes.\n";
         }
 
         // write to new Candidate table
@@ -56,7 +63,7 @@ string update_candidate(string candidateID) {
         }
         fout << record[11] << '\n';
     }
-
+    
     fin.close();
     fout.close();
 
@@ -67,39 +74,65 @@ string update_candidate(string candidateID) {
 	rename(CANDIDATE_NEW_FILENAME, CANDIDATE_FILENAME);
     return record[10];
 }
-void print_candidate_information() {
-    // ifstream file;
-    // file.open("candidateTable.csv");
-    fstream file (CANDIDATE_FILENAME, ios::in | ios::out);
 
-    if (file.fail()) {
-        pause("Candidate table failed to open, press enter to return to main menu\n");
+void display_candidate_information(int option) {
+    ifstream file (CANDIDATE_FILENAME);
+
+     //check if file can be open/empty
+    if (!file_isValid(file)) {
         return void();
     }
-    else {
-        string record[12];
+
+    string record[12];
+    int voteMinMax = 0;
+
+    if (option == LOW) voteMinMax == 10000;
+    if (option != ALL) {
+        file.ignore(10000,'\n');
+        while (getline(file, record[0], ',')) {
         
-        if (file.get(), file.eof()) {
-            // check if csv file (database) is empty
-            pause("The database is empty, press enter to return to main menu\n");
-            return void();
-        }
-        else {
-            // if database is not empty
-            cout << "\nRunning Candidates\n";
-            while (!file.eof()) {
-                // until eof is reached, read column values temporarily into an array and print relevant info to screen in a table-like format
-                for (int i = 0; i <= 10; i++) {
-                    getline(file, record[i], ',');
-                }
-                getline(file, record[11], '\n');
-                
-                cout << '\t' << left << setw(15) << record[1] << setw(15) << record[2] << setw(15) << record[3] << setw(15) << record[4] << setw(15) << record[10] << setw(15) << record[11] << endl;
+            for (int i=1; i<11; i++) {
+                getline(file, record[i], ',');
+            }
+            getline(file, record[11], '\n');
+
+            int votes = stoi(record[11]);
+            if (option == LOW) {
+                if (votes <= voteMinMax) voteMinMax = votes;
+            }
+            else {
+                if (votes >= voteMinMax) voteMinMax = votes;
             }
         }
     }
+    else {
+        cout << "\nRunning Candidates\n";
+    }
+    
+    file.clear();
+    file.seekg(ios::beg);
+    file.ignore(10000, '\n');
+    cout << '\t' << left << setw(15) << "Candidate ID" << setw(15) << "Course" << setw(15) << "First name" << setw(15) << "Last name" << setw(15) << "Symbol" << setw(15) << "Vote count" << endl;
+    while (getline(file, record[0], ',')) {
+        // until eof is reached, read column values temporarily into an array and print relevant info to screen in a table-like format
+        for (int i = 1; i <= 10; i++) {
+            getline(file, record[i], ',');
+        }
+        getline(file, record[11], '\n');
+        
+        if (option == ALL || stoi(record[11]) == voteMinMax) {
+            cout << '\t' << left << setw(15) << record[0] << setw(15) << record[2] << setw(15) << record[3] << setw(15) << record[4] << setw(15) << record[10] << setw(15) << record[11] << endl;
+        }
+        // else {
+        //     if (stoi(record[11]) == voteMinMax) {
+        //         cout << '\t' << left << setw(15) << record[0] << setw(15) << record[2] << setw(15) << record[3] << setw(15) << record[4] << setw(15) << record[10] << setw(15) << record[11] << endl;
+        //     }
+        // }
+
+    }
+
     file.close();
-    pause("Press enter to return to main menu\n");
+    pause("Press enter to return to main menu ");
 }
 
 void add_votes() {
@@ -110,16 +143,15 @@ void add_votes() {
     ifstream fin (VOTER_FILENAME);
     ofstream fout (VOTER_NEW_FILENAME);
 
-    // check if file can be open/empty
-    // if (!file_isValid(file)) {
-    //     return void();
-    // }
+    //check if file can be open/empty
+    if (!file_isValid(fin)) {
+        return void();
+    }
     
     cout << "Please enter your student ID: ";
     cin >> voterID;
 
     while (getline(fin, record[0], ',')) {
-        //cout << "Hello";
         // copy row data to an array
         for (int i = 1; i < 10; i++) {
             getline(fin, record[i], ',');
@@ -145,7 +177,6 @@ void add_votes() {
                     vote_confirmed = true;
                     record[9] = "Yes";
                     record[10] = update_candidate(candidateID);
-                    cout << "Placeholder";
                 } 
                 else if (selection == "X" || selection == "x") {
                     break;
@@ -163,27 +194,14 @@ void add_votes() {
     fin.close();
     fout.close();
 
-    // remove the old database
-    //remove(VOTER_NEW_FILENAME);
-
-	// renaming to the new database
-	//rename(CANDIDATE_NEW_FILENAME, CANDIDATE_FILENAME);
-}
-
-void display_losing_candidate() {
-    pause("display_losing_candidate() function complete, press enter to return to main menu\n");
-}
-
-void display_winning_candidate() {
-    pause("display_winning_candidate() placeholder, press enter to return to main menu\n");
+    //remove and replace the old database 
+    remove(VOTER_FILENAME);
+	rename(VOTER_NEW_FILENAME, VOTER_FILENAME);
 }
 
 void menu() {
     bool exit = false;
     string selection;
-
-    //ifstream candidateFile (CANDIDATE_FILE); //open as output fui
-    //fstream voterFile (VOTER_FILENAME, ios::in | ios::out);
 
     while (exit == false) {
         cout << "Select an option to get started\n";
@@ -195,16 +213,16 @@ void menu() {
         cin >> selection;
 
         if (selection == "p" || selection == "P") {
-            print_candidate_information();
+            display_candidate_information(ALL);
         }
         else if (selection == "a" || selection == "A") {
             add_votes();
         }
         else if (selection == "s" || selection == "S") {
-            display_losing_candidate();
+            display_candidate_information(LOW);
         }
         else if (selection == "l" || selection == "L") {
-            display_winning_candidate();
+            display_candidate_information(HIGH);
         }
         else if (selection == "q" || selection == "Q") {
             cout << "Exiting program\n";
@@ -218,8 +236,5 @@ void menu() {
 
 int main()
 {   
-    //menu(); // main menu for the program
-    //update_candidate("5");
-    add_votes();
-    //print_candidate_information();
+    menu(); // main menu for the program
 }
