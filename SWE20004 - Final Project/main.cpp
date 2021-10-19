@@ -49,6 +49,8 @@ int str2int(string str) {
 
     return stoi(str);
 }
+
+// update candidate with specified ID
 string update_candidate(string candidateID) {
     string record[12];
     bool recordFound = false;
@@ -132,6 +134,8 @@ void display_candidate_information(int option) {
             getline(file, record[11], '\n');
 
             int votes = str2int(record[11]);
+
+            // find the min/max vote
             if (option == LOW) {
                 if (votes <= voteMinMax) voteMinMax = votes;
             }
@@ -161,6 +165,7 @@ void display_candidate_information(int option) {
         }
         getline(file, record[11], '\n');
         
+        // print all record with
         if (option == ALL || str2int(record[11]) == voteMinMax) {
             cout << '\t' << left << setw(15) << record[0] << setw(15) << record[2] << setw(15) << record[3] << setw(15) << record[4] << setw(15) << record[10] << setw(15) << record[11] << endl;
         }
