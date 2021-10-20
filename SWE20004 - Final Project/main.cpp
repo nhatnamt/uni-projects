@@ -242,6 +242,10 @@ void add_votes() {
     //remove and replace the old database 
     remove(VOTER_FILENAME);
 	rename(VOTER_NEW_FILENAME, VOTER_FILENAME);
+
+    if (!record_found) {
+        pause("No matching student ID found. Press enter to return to menu.");
+    }
 }
 
 void menu() {
