@@ -62,6 +62,9 @@ string update_candidate(string candidateID) {
         return "";
     }
 
+    // go back to the start of file
+    fin.clear();
+    fin.seekg(ios::beg);
     // get the first field on the row of the database until eof
     while (getline(fin, record[0], ',')) {
         
@@ -192,6 +195,10 @@ void add_votes() {
     cout << "Please enter your student ID: ";
     cin >> voterID;
 
+    // go back to the start of file
+    fin.clear();
+    fin.seekg(ios::beg);
+
     while (getline(fin, record[0], ',')) {
         // copy row data to an array
         for (int i = 1; i < 10; i++) {
@@ -222,7 +229,7 @@ void add_votes() {
                         record[9] = "Yes";
                         record[10] = update_candidate(candidateID);
                     } 
-                    else if (selection == "X" || selection == "x") {
+                    else if (selection == "M" || selection == "m") {
                         break;
                     }
                 }
