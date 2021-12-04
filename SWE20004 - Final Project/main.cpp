@@ -82,7 +82,8 @@ string update_candidate(string candidateID) {
 
             // increase vote by 1 and print confirmation
             record[11] = to_string(voteCount+1);
-            cout << "\nVote updated. Candidate " << record[0] << " - " << record[3] + ' ' + record[4] << " now has " << record[11] << " votes.\n";
+            cout << "\nVote updated. Candidate " << record[0] << " - " 
+                 << record[3] + ' ' + record[4] << " now has " << record[11] << " votes.\n";
         }
 
         // write to new Candidate table
@@ -160,7 +161,8 @@ void display_candidate_information(int option) {
     file.ignore(10000, '\n'); // skip the first line
 
 
-    cout << '\t' << left << setw(15) << "Candidate ID" << setw(15) << "Course" << setw(15) << "First name" << setw(15) << "Last name" << setw(15) << "Symbol" << setw(15) << "Vote count" << endl;
+    cout << '\t' << left << setw(15) << "Candidate ID" << setw(15) << "Course" << setw(15) << "First name" 
+         << setw(15) << "Last name" << setw(15) << "Symbol" << setw(15) << "Vote count" << endl;
     while (getline(file, record[0], ',')) {
         // until eof is reached, read column values temporarily into an array and print relevant info to screen in a table-like format
         for (int i = 1; i <= 10; i++) {
@@ -170,7 +172,8 @@ void display_candidate_information(int option) {
         
         // print all record with
         if (option == ALL || str2int(record[11]) == voteMinMax) {
-            cout << '\t' << left << setw(15) << record[0] << setw(15) << record[2] << setw(15) << record[3] << setw(15) << record[4] << setw(15) << record[10] << setw(15) << record[11] << endl;
+            cout << '\t' << left << setw(15) << record[0] << setw(15) << record[2] << setw(15) << record[3] 
+                 << setw(15) << record[4] << setw(15) << record[10] << setw(15) << record[11] << endl;
         }
 
     }

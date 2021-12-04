@@ -1,7 +1,7 @@
 date ID,Student ID,Faculty,First name,Last name,Age,Suburb,Postcode,State,Phone,Symbol,Vote count
 1,102765458,BABUS,Scomo,Morris,22,Melbourne,3000,VIC,0456857235,Libz,3
 2,103105345,BACS,Dick,Hervey,20,South Yarra,3141,VIC,0491571491,Triangle,0
-3,102786465,BAART,Linda,Moped,23,Fitzroy,3065,VIC,0498673549,FolksVagen,2
+3,102786465,BAART,Linda,Moped,23,Fitzroy,3065,VIC,0498673549,FolksVagen,3
 4,103567345,BACS,Damo,Steve,21,Melbourne,3000,VIC,0412345456,VB,1
 5,103539492,BAICT,Wilma ,Arthur,24,Sydney,2000,NSW,0491570156,Libz,1
 6,102434975,BACS,Aiysha ,Turner,25,Hamilton,4007,QLD,0425511001,VB,0
